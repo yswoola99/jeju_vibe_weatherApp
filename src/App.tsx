@@ -6,6 +6,7 @@ import { DailyForecastCard } from "@/components/weather/DailyForecastCard";
 import { AirQualityCard } from "@/components/weather/AirQualityCard";
 import { WeatherChatWidget } from "@/components/chat/WeatherChatWidget";
 import { WeatherBackgroundVideo } from "@/components/weather/WeatherBackgroundVideo";
+import { LocationMap } from "@/components/weather/LocationMap";
 import { useLocation } from "@/context/LocationContext";
 import { useGeolocationInit } from "@/hooks/useGeolocation";
 import { useForecastQuery } from "@/hooks/useForecastQuery";
@@ -64,6 +65,8 @@ function App() {
           isLoading={forecastQuery.isLoading}
           isError={forecastQuery.isError}
         />
+
+        <LocationMap location={location} />
       </main>
 
       <WeatherChatWidget
