@@ -14,32 +14,37 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border/60 bg-background/80 px-4 py-3 backdrop-blur-md sm:px-6">
-      <Button
-        variant="ghost"
-        className="flex h-auto items-center gap-2 px-2 py-1.5"
-        onClick={() => setSearchOpen(true)}
-      >
+      <div className="flex items-center gap-2 px-2 py-1.5">
         <MapPin className="size-5 text-primary" />
         <span className="text-base font-semibold sm:text-lg">{location.name}</span>
-        <Search className="ml-1 size-4 text-muted-foreground" />
-      </Button>
+      </div>
 
-      <ToggleGroup
-        type="single"
-        value={unit}
-        onValueChange={(value) => {
-          if (value) setUnit(value as TemperatureUnit);
-        }}
-        variant="outline"
-        size="sm"
-      >
-        <ToggleGroupItem value="C" aria-label="섭씨">
-          °C
-        </ToggleGroupItem>
-        <ToggleGroupItem value="F" aria-label="화씨">
-          °F
-        </ToggleGroupItem>
-      </ToggleGroup>
+      <div className="flex items-center gap-2">
+        <Button
+          onClick={() => setSearchOpen(true)}
+          className="gap-1.5 rounded-full shadow-md shadow-primary/30"
+        >
+          <Search className="size-4" />
+          <span className="hidden sm:inline">도시 검색</span>
+        </Button>
+
+        <ToggleGroup
+          type="single"
+          value={unit}
+          onValueChange={(value) => {
+            if (value) setUnit(value as TemperatureUnit);
+          }}
+          variant="outline"
+          size="sm"
+        >
+          <ToggleGroupItem value="C" aria-label="섭씨">
+            °C
+          </ToggleGroupItem>
+          <ToggleGroupItem value="F" aria-label="화씨">
+            °F
+          </ToggleGroupItem>
+        </ToggleGroup>
+      </div>
 
       <CitySearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
     </header>

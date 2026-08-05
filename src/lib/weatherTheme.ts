@@ -1,17 +1,5 @@
 import type { WeatherTone } from "@/lib/weatherCode";
 
-const PAGE_BACKGROUND: Record<WeatherTone, { day: string; night: string }> = {
-  clear: { day: "from-sky-300 via-sky-100 to-amber-50", night: "from-slate-950 via-indigo-950 to-slate-900" },
-  cloudy: { day: "from-slate-300 via-slate-200 to-slate-100", night: "from-slate-800 via-slate-900 to-slate-950" },
-  rain: { day: "from-slate-500 via-slate-400 to-sky-200", night: "from-slate-900 via-slate-800 to-indigo-950" },
-  snow: { day: "from-sky-100 via-slate-100 to-white", night: "from-slate-700 via-slate-800 to-slate-900" },
-  storm: { day: "from-slate-700 via-slate-800 to-slate-950", night: "from-slate-900 via-black to-slate-950" },
-};
-
-export function getPageBackgroundClass(tone: WeatherTone, isDay: boolean): string {
-  return isDay ? PAGE_BACKGROUND[tone].day : PAGE_BACKGROUND[tone].night;
-}
-
 const CARD_GRADIENT: Record<WeatherTone, { day: string; night: string }> = {
   clear: { day: "from-amber-200 via-sky-200 to-sky-100", night: "from-indigo-950 via-slate-900 to-black" },
   cloudy: { day: "from-slate-300 via-slate-200 to-white", night: "from-slate-700 via-slate-800 to-slate-950" },
