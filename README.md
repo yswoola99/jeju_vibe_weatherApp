@@ -40,7 +40,10 @@ src/
   lib/           # API 클라이언트, 포맷터, 날씨 코드/테마/영상 매핑, Google 로그인 유틸
   types/         # 공용 타입 정의 (Google Identity Services 타입 포함)
 server/
-  index.js       # Gemini API 프록시 서버 (API 키를 서버에서만 사용)
+  index.js               # 로컬 개발용 Express 서버 (Vite 프록시 대상, 8787)
+  geminiChatHandler.js   # Gemini 호출 로직 (Express·Vercel 함수 공용)
+api/
+  gemini/chat.js  # Vercel Serverless Function (geminiChatHandler.js 재사용)
 ```
 
 ## 시작하기
@@ -96,6 +99,19 @@ npm run dev
 ```bash
 npm run build
 ```
+
+## 배포 (Vercel)
+
+이 저장소를 Vercel에 연결하면 프론트엔드는 정적 빌드로, `/api/gemini/chat`은 `api/gemini/chat.js`가 **Serverless Function**으로 자동 배포됩니다 (로컬용 `server/index.js`는 Vercel에서 실행되지 않으며, 둘 다 같은 `server/geminiChatHandler.js` 로직을 공유합니다).
+
+배포 후 아래 두 가지를 반드시 확인하세요.
+
+1. **Vercel 프로젝트 > Settings > Environment Variables**에 다음 값을 등록하고 재배포(Redeploy)합니다.
+   - `GEMINI_API_KEY`, `GEMINI_MODEL` (서버 전용, `VITE_` 접두사 없음 — 브라우저에 노출되지 않습니다)
+   - `VITE_GOOGLE_MAPS_API_KEY`, `VITE_GOOGLE_CLIENT_ID` (Vite가 빌드 시점에 번들에 포함하므로, 값을 바꾼 뒤에는 반드시 재배포해야 반영됩니다)
+2. **Google Cloud Console**에서 배포 도메인(예: `https://your-app.vercel.app`)을 다음 두 곳에 등록합니다.
+   - OAuth 클라이언트 ID의 **Authorized JavaScript origins** — 누락 시 로그인 클릭 시 `origin_mismatch` 오류 발생
+   - Maps API 키에 HTTP 리퍼러 제한을 쓰고 있다면 그 목록에도 추가
 
 ## 스크립트
 
