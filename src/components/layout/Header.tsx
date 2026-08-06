@@ -3,6 +3,7 @@ import { Search, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { CitySearchDialog } from "@/components/weather/CitySearchDialog";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { useLocation } from "@/context/LocationContext";
 import { useUnit } from "@/context/UnitContext";
 import type { TemperatureUnit } from "@/types/weather";
@@ -44,6 +45,8 @@ export function Header() {
             °F
           </ToggleGroupItem>
         </ToggleGroup>
+
+        <GoogleSignInButton />
       </div>
 
       <CitySearchDialog open={searchOpen} onOpenChange={setSearchOpen} />

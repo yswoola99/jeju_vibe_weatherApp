@@ -15,12 +15,13 @@
 - **지도**: 화면 하단에 Google 지도를 표시하며, 검색·지역 전환 시 해당 위치로 자동 이동합니다.
 - **섭씨/화씨 전환**: 헤더에서 온도 단위를 바로 바꿀 수 있습니다.
 - **AI 날씨 챗봇**: 우측 하단 플로팅 버튼으로 열리는 채팅창에서 현재 위치의 실시간 날씨 데이터를 근거로 Gemini가 답변합니다. ("오늘 우산 챙겨야 해?" 같은 질문 가능)
+- **Google 로그인**: 헤더 우측 상단에서 Google 계정으로 로그인할 수 있으며, 로그인해야만 AI 날씨 챗봇이 표시됩니다.
 
 ## 기술 스택
 
 - **프론트엔드**: React 19, TypeScript, Vite, Tailwind CSS v4, shadcn/ui, Radix UI, TanStack Query, Lucide Icons
 - **백엔드**: Express (Gemini API 프록시 서버)
-- **외부 API**: Open-Meteo(날씨·대기질·지오코딩), BigDataCloud(역지오코딩), Google Gemini API(챗봇), Google Maps Embed API(지도)
+- **외부 API**: Open-Meteo(날씨·대기질·지오코딩), BigDataCloud(역지오코딩), Google Gemini API(챗봇), Google Maps Embed API(지도), Google Identity Services(로그인)
 
 ## 프로젝트 구조
 
@@ -29,14 +30,15 @@ src/
   assets/
     weather-videos/  # 날씨별 배경 영상 (14개: 7가지 날씨 x 낮/밤)
   components/
+    auth/        # Google 로그인 버튼
     chat/        # 날씨 챗봇 위젯
     layout/      # 헤더
     weather/     # 날씨 카드, 시간별 그래프, 도시 검색, 배경 영상, 지도 등
     ui/          # shadcn 기반 공통 UI 컴포넌트
-  context/       # 위치(Location), 온도 단위(Unit) 컨텍스트
+  context/       # 위치(Location), 온도 단위(Unit), 로그인(Auth) 컨텍스트
   hooks/         # 데이터 조회 및 유틸 훅
-  lib/           # API 클라이언트, 포맷터, 날씨 코드/테마/영상 매핑
-  types/         # 공용 타입 정의
+  lib/           # API 클라이언트, 포맷터, 날씨 코드/테마/영상 매핑, Google 로그인 유틸
+  types/         # 공용 타입 정의 (Google Identity Services 타입 포함)
 server/
   index.js       # Gemini API 프록시 서버 (API 키를 서버에서만 사용)
 ```
@@ -62,11 +64,14 @@ GEMINI_API_KEY=발급받은_키
 GEMINI_MODEL=gemini-flash-latest
 PORT=8787
 VITE_GOOGLE_MAPS_API_KEY=발급받은_키
+VITE_GOOGLE_CLIENT_ID=발급받은_클라이언트_ID
 ```
 
 > **GEMINI_API_KEY**는 프론트엔드에 절대 노출되지 않고 `server/index.js` 프록시 서버에서만 사용됩니다. 챗봇 기능 없이 날씨 정보만 쓸 경우 이 값은 비워둬도 됩니다.
 >
 > **VITE_GOOGLE_MAPS_API_KEY**는 [Google Cloud Console](https://console.cloud.google.com/google/maps-apis/credentials)에서 프로젝트를 만들고 **Maps Embed API**를 활성화한 뒤 발급받은 API 키입니다. 이 키는 브라우저에 노출되는 게 정상이므로(Maps Embed API는 사용량과 무관하게 무료), 서버로 숨기는 대신 Cloud Console에서 **HTTP 리퍼러 제한**(`localhost:5173/*`, 배포 도메인 등)으로 보호하세요. 값을 비워두면 지도 영역에 안내 메시지가 표시됩니다.
+>
+> **VITE_GOOGLE_CLIENT_ID**는 [Google Cloud Console > API 및 서비스 > 사용자 인증 정보](https://console.cloud.google.com/apis/credentials)에서 **OAuth 클라이언트 ID**(애플리케이션 유형: 웹 애플리케이션)를 만들어 발급받습니다. **승인된 JavaScript 원본**에 `http://localhost:5173`과 배포 도메인을 등록해야 합니다. 값을 비워두면 헤더에 "로그인 설정 필요"가 표시되고 로그인 전까지 챗봇이 숨겨집니다.
 >
 > 환경 변수를 바꾼 뒤에는 `npm run dev` / `npm run dev:all`을 **재시작**해야 반영됩니다.
 
@@ -83,6 +88,8 @@ npm run dev:all
 ```bash
 npm run dev
 ```
+
+> `npm run dev`만 실행한 상태에서 챗봇을 사용하면 `ECONNREFUSED` 또는 "챗봇 서버에 연결할 수 없습니다" 오류가 발생합니다. API 서버(8787)가 떠 있지 않기 때문이며, 별도 터미널에서 `npm run server`를 추가로 실행하거나 `npm run dev:all`로 재시작하면 해결됩니다.
 
 ### 4. 빌드
 

@@ -5,6 +5,7 @@ import "./index.css";
 import App from "./App.tsx";
 import { LocationProvider } from "@/context/LocationContext";
 import { UnitProvider } from "@/context/UnitContext";
+import { AuthProvider } from "@/context/AuthContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const queryClient = new QueryClient({
@@ -19,13 +20,15 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <LocationProvider>
-        <UnitProvider>
-          <TooltipProvider>
-            <App />
-          </TooltipProvider>
-        </UnitProvider>
-      </LocationProvider>
+      <AuthProvider>
+        <LocationProvider>
+          <UnitProvider>
+            <TooltipProvider>
+              <App />
+            </TooltipProvider>
+          </UnitProvider>
+        </LocationProvider>
+      </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,
 );

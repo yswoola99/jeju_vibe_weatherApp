@@ -8,6 +8,7 @@ import { WeatherChatWidget } from "@/components/chat/WeatherChatWidget";
 import { WeatherBackgroundVideo } from "@/components/weather/WeatherBackgroundVideo";
 import { LocationMap } from "@/components/weather/LocationMap";
 import { useLocation } from "@/context/LocationContext";
+import { useAuth } from "@/context/AuthContext";
 import { useGeolocationInit } from "@/hooks/useGeolocation";
 import { useForecastQuery } from "@/hooks/useForecastQuery";
 import { useAirQualityQuery } from "@/hooks/useAirQualityQuery";
@@ -15,6 +16,7 @@ import { useAirQualityQuery } from "@/hooks/useAirQualityQuery";
 function App() {
   useGeolocationInit();
   const { location } = useLocation();
+  const { isSignedIn } = useAuth();
 
   const forecastQuery = useForecastQuery(location.latitude, location.longitude);
   const airQualityQuery = useAirQualityQuery(location.latitude, location.longitude);
@@ -69,11 +71,13 @@ function App() {
         <LocationMap location={location} />
       </main>
 
-      <WeatherChatWidget
-        location={location}
-        forecast={forecastQuery.data}
-        airQuality={airQualityQuery.data}
-      />
+      {isSignedIn && (
+        <WeatherChatWidget
+          location={location}
+          forecast={forecastQuery.data}
+          airQuality={airQualityQuery.data}
+        />
+      )}
     </div>
   );
 }
